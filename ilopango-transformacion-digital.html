@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ilopango · Del aeródromo al hub ejecutivo digital — Equipo 5 MBA UEES</title>
+<meta name="description" content="Propuesta de transformación digital del Aeropuerto Internacional de Ilopango. Equipo 5 — Maestría en Administración de Negocios y Transformación Digital, UEES." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080d1a;
+  --bg-2:#0b1426;
+  --panel:#101c33;
+  --panel-2:#16243f;
+  --line:#22324f;
+  --line-soft:#1a2740;
+  --ink:#eaf1fb;
+  --ink-soft:#9fb1cd;
+  --ink-mute:#6b7f9e;
+  --amber:#f1b24a;     /* luces de pista / ejecutivo */
+  --amber-deep:#d8902a;
+  --teal:#34e0c4;      /* instrumentos / datos */
+  --teal-deep:#16b8a0;
+  --danger:#ff6b6b;
+  --warn:#f1b24a;
+  --ok:#34e0c4;
+  --maxw:1120px;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body::before{
+  /* ambiente: resplandor de instrumentos + grano sutil */
+  content:"";
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(1100px 600px at 78% -8%, rgba(241,178,74,.10), transparent 60%),
+    radial-gradient(900px 700px at -5% 30%, rgba(52,224,196,.08), transparent 55%),
+    linear-gradient(180deg,#080d1a 0%, #0a1322 55%, #080d1a 100%);
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.1;letter-spacing:-.01em;margin:0}
+p{margin:0 0 1rem}
+.mono{font-family:var(--mono)}
+
+/* ---------- layout helpers ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+section{position:relative;padding:108px 0;border-top:1px solid var(--line-soft)}
+section:first-of-type{border-top:none}
+
+.eyebrow{
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--teal);display:inline-flex;align-items:center;gap:11px;margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--teal);opacity:.7}
+.req{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--bg);background:var(--amber);font-weight:600;
+  padding:4px 10px;border-radius:3px;display:inline-block;margin-bottom:20px;
+}
+.req.teal{background:var(--teal)}
+.sec-title{font-size:clamp(28px,4.4vw,46px);max-width:18ch;margin-bottom:22px}
+.lead{font-size:clamp(17px,2vw,20px);color:var(--ink-soft);max-width:62ch}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{animation:none!important}
+  html{scroll-behavior:auto}
+}
+
+/* ---------- nav (tablero de salidas) ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:13px 28px;
+  background:rgba(8,13,26,.72);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-soft);
+  transition:padding .3s ease,background .3s ease;
+}
+.nav.shrink{padding:9px 28px;background:rgba(8,13,26,.9)}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:14px;letter-spacing:.04em}
+.brand b{font-family:var(--display);font-weight:700;letter-spacing:.02em}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-links a{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink-mute);
+  padding:7px 11px;border-radius:5px;transition:color .2s,background .2s;text-transform:uppercase;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.active{color:var(--teal);background:rgba(52,224,196,.08)}
+.nav-burger{display:none;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:12px;cursor:pointer}
+@media (max-width:920px){
+  .nav-links{position:fixed;inset:54px 0 auto 0;flex-direction:column;background:rgba(8,13,26,.97);
+    border-bottom:1px solid var(--line);padding:10px 18px 20px;gap:2px;display:none}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:11px 6px;font-size:13px}
+  .nav-burger{display:block}
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:120px 0 60px;border-top:none;overflow:hidden;
+}
+.runway{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  perspective:600px;overflow:hidden;
+}
+.runway::before{
+  /* franja de pista en fuga */
+  content:"";position:absolute;left:50%;bottom:-6%;width:46vw;height:150%;
+  transform:translateX(-50%) rotateX(64deg);transform-origin:bottom center;
+  background:
+    linear-gradient(180deg,transparent,rgba(16,28,51,.55) 40%, rgba(16,28,51,.85)),
+    repeating-linear-gradient(180deg, rgba(241,178,74,.0) 0 64px, rgba(241,178,74,.55) 64px 110px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 38%,#000 78%,transparent);
+          mask-image:linear-gradient(180deg,transparent,#000 38%,#000 78%,transparent);
+  background-size:100% 100%, 26px 100%;
+  background-position:center, center;
+  opacity:.5;
+}
+.centerline{
+  position:absolute;left:50%;bottom:-6%;width:8px;height:150%;
+  transform:translateX(-50%) rotateX(64deg);transform-origin:bottom center;
+  background:repeating-linear-gradient(180deg,var(--ink) 0 46px,transparent 46px 110px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 45%,transparent 88%);
+          mask-image:linear-gradient(180deg,transparent,#000 45%,transparent 88%);
+  opacity:.6;animation:taxi 5.5s linear infinite;
+}
+@keyframes taxi{from{background-position-y:0}to{background-position-y:156px}}
+.hero .wrap{position:relative;z-index:1}
+.hero-tag{
+  font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);
+  display:flex;align-items:center;gap:12px;margin-bottom:26px;flex-wrap:wrap;
+}
+.hero-tag span{color:var(--ink-mute)}
+.hero h1{
+  font-size:clamp(40px,7.5vw,86px);font-weight:700;letter-spacing:-.025em;line-height:.98;
+  margin-bottom:26px;max-width:15ch;
+}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero h1 .glow{color:var(--teal)}
+.hero-sub{font-size:clamp(17px,2.2vw,22px);color:var(--ink-soft);max-width:54ch;margin-bottom:38px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:54px}
+.btn{
+  font-family:var(--mono);font-size:13.5px;letter-spacing:.04em;
+  padding:14px 22px;border-radius:7px;cursor:pointer;transition:transform .15s,background .2s,border-color .2s;
+  display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:transparent;color:var(--ink);
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--amber);color:#1a1305;border-color:var(--amber);font-weight:600}
+.btn-primary:hover{background:#f7c163}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+
+/* boarding pass */
+.pass{
+  display:grid;grid-template-columns:1fr auto;gap:0;max-width:560px;
+  background:linear-gradient(145deg,var(--panel),var(--bg-2));
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 60px -30px rgba(0,0,0,.7);
+}
+.pass-main{padding:22px 24px;position:relative}
+.pass-route{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.pass-route .code{font-family:var(--display);font-weight:700;font-size:30px;line-height:1}
+.pass-route .code small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-mute);margin-top:5px;font-weight:400}
+.pass-route .arrow{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--teal) 0 6px,transparent 6px 11px);position:relative}
+.pass-route .arrow::after{content:"✈";position:absolute;right:-2px;top:-10px;color:var(--teal);font-size:15px}
+.pass-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 18px}
+.pass-grid div span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:3px}
+.pass-grid div b{font-family:var(--mono);font-size:13.5px;font-weight:500;color:var(--ink)}
+.pass-stub{
+  width:78px;background:var(--amber);color:#1a1305;display:flex;align-items:center;justify-content:center;
+  position:relative;writing-mode:vertical-rl;text-orientation:mixed;
+  font-family:var(--mono);font-weight:600;letter-spacing:.18em;font-size:12px;text-transform:uppercase;
+  border-left:2px dashed rgba(8,13,26,.4);
+}
+.scroll-hint{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);margin-top:48px;display:flex;align-items:center;gap:10px}
+.scroll-hint .bar{width:30px;height:1px;background:var(--ink-mute);animation:slidebar 1.8s ease-in-out infinite}
+@keyframes slidebar{0%,100%{transform:scaleX(.4);opacity:.4}50%{transform:scaleX(1);opacity:1}}
+
+/* ---------- stat tiles ---------- */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px}
+.stat{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:22px 20px}
+.stat .num{font-family:var(--display);font-weight:700;font-size:clamp(28px,3.6vw,40px);color:var(--amber);line-height:1}
+.stat .num.teal{color:var(--teal)}
+.stat .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--ink-soft);margin-top:10px;line-height:1.45}
+@media(max-width:760px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- generic grids/cards ---------- */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line-soft);border-radius:13px;padding:26px;transition:border-color .25s,transform .25s}
+.card:hover{border-color:var(--line);transform:translateY(-3px)}
+.card .k{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--teal);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.card h3{font-size:21px;margin-bottom:11px}
+.card p{color:var(--ink-soft);font-size:15.5px;margin:0}
+.card .idx{font-family:var(--mono);color:var(--ink-mute);font-size:13px}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line-soft);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+th,td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);background:var(--panel-2);font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(52,224,196,.03)}
+td .asis{color:var(--ink-mute)}
+td .tobe{color:var(--ink)}
+.pill{font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:3px 9px;border-radius:20px;display:inline-block;white-space:nowrap}
+.pill.alto{background:rgba(255,107,107,.14);color:#ff9a9a;border:1px solid rgba(255,107,107,.3)}
+.pill.medio{background:rgba(241,178,74,.14);color:#f4c878;border:1px solid rgba(241,178,74,.3)}
+.pill.bajo{background:rgba(52,224,196,.12);color:#7fe9d6;border:1px solid rgba(52,224,196,.3)}
+
+/* ---------- radar ---------- */
+.radar-block{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+@media(max-width:860px){.radar-block{grid-template-columns:1fr}}
+.radar-svg{width:100%;max-width:440px;margin:0 auto;display:block}
+.radar-poly{transition:transform 1.1s cubic-bezier(.2,.7,.2,1),opacity 1.1s ease;transform:scale(.05);transform-origin:200px 178px;opacity:0}
+.radar-poly.draw{transform:scale(1);opacity:1}
+.idx-badge{display:flex;align-items:baseline;gap:14px;margin:6px 0 22px;padding:18px 22px;background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;border-left:3px solid var(--amber)}
+.idx-badge .big{font-family:var(--display);font-weight:700;font-size:48px;color:var(--amber);line-height:1}
+.idx-badge .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);letter-spacing:.04em}
+.pillar-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.pillar-list li{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:13px}
+.pillar-list .name{flex:0 0 175px;color:var(--ink-soft)}
+.pillar-list .bar{flex:1;height:7px;background:var(--line-soft);border-radius:6px;overflow:hidden}
+.pillar-list .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal-deep),var(--teal));border-radius:6px;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.pillar-list .v{flex:0 0 32px;text-align:right;color:var(--amber)}
+@media(max-width:520px){.pillar-list .name{flex-basis:120px}}
+
+/* ---------- pasos / niveles ---------- */
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+.levels div{padding:22px;border-right:1px solid var(--line-soft)}
+.levels div:last-child{border-right:none}
+.levels .n{font-family:var(--mono);color:var(--ink-mute);font-size:12px;letter-spacing:.1em}
+.levels h4{font-size:18px;margin:8px 0 7px}
+.levels p{font-size:14.5px;color:var(--ink-soft);margin:0}
+.levels .hi h4{color:var(--amber)}
+@media(max-width:760px){.levels{grid-template-columns:1fr}.levels div{border-right:none;border-bottom:1px solid var(--line-soft)}.levels div:last-child{border-bottom:none}}
+
+/* ---------- data architecture ---------- */
+.arch{display:grid;gap:14px}
+.layer{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:18px;padding:20px 22px;background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;position:relative}
+.layer .lnum{font-family:var(--display);font-weight:700;font-size:26px;color:var(--teal);opacity:.55}
+.layer h4{font-size:18px;margin-bottom:4px}
+.layer p{margin:0;font-size:14.5px;color:var(--ink-soft)}
+.layer .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--amber);border:1px solid var(--line);padding:5px 11px;border-radius:20px;white-space:nowrap}
+@media(max-width:640px){.layer{grid-template-columns:40px 1fr}.layer .tag{grid-column:1/-1}}
+.ladder{display:flex;gap:0;align-items:flex-end;margin-top:8px;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+.ladder div{flex:1;padding:20px 18px;border-right:1px solid var(--line-soft);background:linear-gradient(180deg,transparent,rgba(52,224,196,.04))}
+.ladder div:last-child{border-right:none}
+.ladder .step{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-mute);text-transform:uppercase}
+.ladder h4{font-size:17px;margin:9px 0 6px}
+.ladder p{font-size:14px;color:var(--ink-soft);margin:0}
+.ladder .s2 h4{color:var(--teal)}
+.ladder .s3 h4{color:var(--amber)}
+@media(max-width:760px){.ladder{flex-direction:column}.ladder div{border-right:none;border-bottom:1px solid var(--line-soft)}}
+
+/* ---------- roadmap como pista ---------- */
+.roadway{position:relative;margin-top:18px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,var(--bg-2),#0a1322);border:1px solid var(--line-soft);padding:30px 26px 26px}
+.roadway::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;transform:translateY(-50%);
+  background:repeating-linear-gradient(90deg,var(--amber) 0 26px,transparent 26px 52px);opacity:.32}
+.waves{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative;z-index:1}
+.wave{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:22px;border-top:3px solid var(--teal)}
+.wave:nth-child(2){border-top-color:var(--amber)}
+.wave:nth-child(3){border-top-color:var(--amber-deep)}
+.wave .dist{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--amber);margin-bottom:6px}
+.wave .w-n{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--ink-mute);text-transform:uppercase}
+.wave h4{font-size:20px;margin:6px 0 13px}
+.wave ul{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+.wave li{font-size:14.5px;color:var(--ink-soft);padding-left:18px;position:relative}
+.wave li::before{content:"›";position:absolute;left:0;color:var(--teal)}
+.phases{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.phase{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:30px;padding:9px 16px;display:flex;align-items:center;gap:9px}
+.phase b{color:var(--teal);font-weight:600}
+@media(max-width:860px){.waves{grid-template-columns:1fr}}
+
+/* ---------- stakeholder grid ---------- */
+.stk{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
+@media(max-width:860px){.stk{grid-template-columns:1fr}}
+.matrix{position:relative;aspect-ratio:1/.92;border:1px solid var(--line);border-radius:12px;background:
+  linear-gradient(0deg,transparent 49.6%,var(--line-soft) 49.6%,var(--line-soft) 50.4%,transparent 50.4%),
+  linear-gradient(90deg,transparent 49.6%,var(--line-soft) 49.6%,var(--line-soft) 50.4%,transparent 50.4%),
+  var(--panel);
+  min-height:320px;margin:6px 0}
+.q{position:absolute;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);padding:9px 11px;max-width:46%}
+.q.tl{top:0;left:0}.q.tr{top:0;right:0;text-align:right}.q.bl{bottom:0;left:0}.q.br{bottom:0;right:0;text-align:right}
+.q b{display:block;color:var(--ink-soft)}
+.axis-x,.axis-y{position:absolute;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.axis-x{bottom:-26px;left:50%;transform:translateX(-50%)}
+.axis-y{top:50%;left:-12px;transform:translate(-100%,-50%) rotate(180deg);writing-mode:vertical-rl}
+.actor{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:default}
+.actor .pin{width:15px;height:15px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 5px rgba(52,224,196,.16);transition:transform .2s}
+.actor.crit .pin{background:var(--amber);box-shadow:0 0 0 5px rgba(241,178,74,.2),0 0 16px var(--amber)}
+.actor:hover .pin{transform:scale(1.25)}
+.actor .nm{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);text-align:center;max-width:120px;line-height:1.3;background:rgba(8,13,26,.7);padding:2px 6px;border-radius:5px}
+.stk-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.stk-list li{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:14px 16px;background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;font-size:14.5px}
+.stk-list .who{display:flex;flex-direction:column}
+.stk-list .who b{font-family:var(--body);font-weight:600}
+.stk-list .who span{font-family:var(--mono);font-size:11.5px;color:var(--ink-mute);letter-spacing:.03em;margin-top:2px}
+.stk-list .strat{font-family:var(--mono);font-size:11.5px;color:var(--teal);text-align:right}
+
+/* ---------- priorización ---------- */
+.moscow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+.moscow div{padding:18px;border-radius:11px;border:1px solid var(--line-soft);background:var(--panel)}
+.moscow .h{font-family:var(--display);font-weight:700;font-size:18px;margin-bottom:7px}
+.moscow .m-must .h{color:var(--amber)}.moscow .m-should .h{color:var(--teal)}
+.moscow p{font-size:13.5px;color:var(--ink-soft);margin:0}
+.moscow small{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink-mute);text-transform:uppercase}
+@media(max-width:760px){.moscow{grid-template-columns:1fr 1fr}}
+.okr{margin-top:26px;background:linear-gradient(135deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:12px;padding:26px}
+.okr .obj{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:16px}
+.okr .obj span{color:var(--teal)}
+.okr ul{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.okr li{font-family:var(--mono);font-size:13.5px;color:var(--ink-soft);padding-left:24px;position:relative}
+.okr li::before{content:"KR";position:absolute;left:0;color:var(--amber);font-size:10px;letter-spacing:.05em;top:2px}
+@media(max-width:640px){.okr ul{grid-template-columns:1fr}}
+
+/* ---------- riesgos finding ---------- */
+.finding{margin-top:26px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  background:linear-gradient(135deg,rgba(255,107,107,.07),var(--panel));border:1px solid rgba(255,107,107,.25);border-radius:13px;padding:26px}
+.finding .ic{font-family:var(--display);font-weight:700;font-size:42px;color:var(--danger);line-height:1}
+.finding p{margin:0;color:var(--ink);font-size:16px}
+.finding b{color:var(--danger)}
+@media(max-width:560px){.finding{grid-template-columns:1fr}}
+
+/* ---------- benefits ---------- */
+.benefits{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.benefit{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:22px 18px;border-bottom:3px solid var(--teal)}
+.benefit:nth-child(even){border-bottom-color:var(--amber)}
+.benefit .bn{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.1em}
+.benefit h4{font-size:17px;margin:9px 0 8px}
+.benefit p{font-size:13.5px;color:var(--ink-soft);margin:0}
+@media(max-width:1000px){.benefits{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.benefits{grid-template-columns:1fr}}
+
+/* ---------- conclusion ---------- */
+.thesis{font-family:var(--display);font-weight:500;font-size:clamp(22px,3.4vw,34px);line-height:1.25;max-width:24ch;margin:0 auto;text-align:center}
+.thesis em{font-style:normal;color:var(--amber)}
+.thesis .t2{color:var(--teal)}
+.equation{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:40px;font-family:var(--mono);font-size:14px;color:var(--ink-soft)}
+.equation span{border:1px solid var(--line);border-radius:30px;padding:10px 18px}
+.equation span b{color:var(--ink)}
+.equation .op{border:none;color:var(--ink-mute);align-self:center}
+
+/* ---------- footer / créditos ---------- */
+.footer{border-top:1px solid var(--line-soft);background:var(--bg-2)}
+.foot-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;padding:70px 0 30px}
+@media(max-width:760px){.foot-grid{grid-template-columns:1fr;gap:28px}}
+.foot-uni{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;color:var(--ink-soft);line-height:1.9}
+.foot-uni b{font-family:var(--display);font-size:16px;color:var(--ink);letter-spacing:.01em;display:block;margin-bottom:8px}
+.team{list-style:none;padding:0;margin:0}
+.team-h{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+.team li{font-size:15px;padding:7px 0;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center}
+.team li:last-child{border-bottom:none}
+.team li span{font-family:var(--mono);font-size:11px;color:var(--ink-mute)}
+.foot-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:20px 0;border-top:1px solid var(--line-soft);font-family:var(--mono);font-size:11.5px;color:var(--ink-mute);letter-spacing:.04em}
+
+/* requisitos checklist en footer */
+.reqmap{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.reqmap a{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:20px;padding:6px 12px;transition:border-color .2s,color .2s}
+.reqmap a:hover{border-color:var(--teal);color:var(--teal)}
+.reqmap a b{color:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav class="nav" id="nav">
+  <a href="#top" class="brand"><span class="dot"></span><b>ILOPANGO</b><span class="mono" style="color:var(--ink-mute)">/ TD·26</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="#contexto">Contexto</a>
+    <a href="#cambios">Cambios</a>
+    <a href="#datos">Datos</a>
+    <a href="#ruta">Hoja de ruta</a>
+    <a href="#actores">Actores</a>
+    <a href="#prioridad">Priorización</a>
+    <a href="#riesgos">Riesgos</a>
+    <a href="#cierre">Cierre</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Menú">MENÚ</button>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="runway"><div class="centerline"></div></div>
+  <div class="wrap">
+    <div class="hero-tag reveal">
+      Propuesta de transformación digital <span>·</span> Equipo 5 <span>·</span> MBA UEES <span>·</span> Junio 2026
+    </div>
+    <h1 class="reveal">Del aeródromo<br>tradicional al <em>hub<br>ejecutivo</em> <span class="glow">basado<br>en datos</span></h1>
+    <p class="hero-sub reveal">No proponemos comprar tecnología. Proponemos cambiar el modelo de negocio del Aeropuerto Internacional de Ilopango: de una pista que se alquila, a una experiencia inteligente que se cobra.</p>
+    <div class="hero-cta reveal">
+      <a href="#contexto" class="btn btn-primary">Iniciar recorrido ↓</a>
+      <a href="#ruta" class="btn btn-ghost">Ver hoja de ruta</a>
+    </div>
+
+    <div class="pass reveal">
+      <div class="pass-main">
+        <div class="pass-route">
+          <div class="code">AS-IS<small>Aeródromo manual</small></div>
+          <div class="arrow"></div>
+          <div class="code">TO-BE<small>Hub digital</small></div>
+        </div>
+        <div class="pass-grid">
+          <div><span>Vuelo</span><b>TD–2026</b></div>
+          <div><span>Operador</span><b>CEPA</b></div>
+          <div><span>Segmento</span><b>Ejecutivo</b></div>
+          <div><span>Madurez actual</span><b>1.8 / 5</b></div>
+          <div><span>Horizonte</span><b>36 meses</b></div>
+          <div><span>Núcleo</span><b>Datos</b></div>
+        </div>
+      </div>
+      <div class="pass-stub">EQUIPO 05</div>
+    </div>
+
+    <div class="scroll-hint reveal"><span class="bar"></span> Desplázate para despegar</div>
+  </div>
+</header>
+
+<!-- ================= CONTEXTO + MADUREZ ================= -->
+<section id="contexto">
+  <div class="wrap">
+    <span class="req">Requisito A · Presentación &amp; diagnóstico</span>
+    <div class="eyebrow reveal">01 · Contexto y oportunidad</div>
+    <h2 class="sec-title reveal">Un activo subutilizado que pide un rediseño profundo, no un ajuste menor.</h2>
+    <p class="lead reveal" style="margin-bottom:40px">Ilopango fue la principal terminal de San Salvador hasta que Comalapa la sustituyó. Hoy opera aviación militar y chárter, alberga el Museo Nacional de Aviación y el Air Show, bajo administración de CEPA. Su única presencia digital es el portal institucional, sin canal transaccional propio.</p>
+
+    <div class="stat-row reveal" style="margin-bottom:48px">
+      <div class="stat"><div class="num">&lt;10K</div><div class="lbl">pasajeros atendidos en 2025</div></div>
+      <div class="stat"><div class="num">−5.6%</div><div class="lbl">caída frente al año anterior</div></div>
+      <div class="stat"><div class="num teal">0 m</div><div class="lbl">de pista ampliable · colinda con zonas urbanas densas</div></div>
+      <div class="stat"><div class="num teal">1.8/5</div><div class="lbl">índice de madurez digital · nivel inicial-básico</div></div>
+    </div>
+
+    <p class="lead reveal" style="margin-bottom:46px">La restricción es la estrategia: si la pista no puede crecer, descartamos competir en volumen con Comalapa. La vocación natural se orienta a un segmento de <b style="color:var(--amber)">alto valor y bajo volumen</b> —la aviación ejecutiva y privada— que la propia administración ya busca atraer.</p>
+
+    <div class="radar-block reveal">
+      <div>
+        <svg class="radar-svg" id="radar" viewBox="-44 0 488 360" role="img" aria-label="Radar de madurez digital por pilar"></svg>
+      </div>
+      <div>
+        <div class="idx-badge">
+          <div class="big">1.8</div>
+          <div class="meta">índice de madurez global<br>sobre 5 · nivel «inicial-básico»</div>
+        </div>
+        <p style="color:var(--ink-soft);font-size:15.5px;margin-bottom:20px">Esto no es una debilidad del proyecto: es su justificación. Existe un recorrido amplio y claro de transformación, imposible de aprovechar con una modernización meramente física.</p>
+        <ul class="pillar-list" id="pillars"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAMBIOS ORGANIZACIONALES ================= -->
+<section id="cambios">
+  <div class="wrap">
+    <span class="req">Requisito B · Cambios organizacionales</span>
+    <div class="eyebrow reveal">02 · De aeródromo a hub ejecutivo</div>
+    <h2 class="sec-title reveal">Tres niveles que no son sinónimos —y la transformación es el más profundo.</h2>
+    <div class="levels reveal" style="margin-bottom:42px">
+      <div><div class="n">NIVEL 1</div><h4>Automatización</h4><p>Mecaniza tareas puntuales sin cambiar el proceso.</p></div>
+      <div><div class="n">NIVEL 2</div><h4>Digitalización</h4><p>Lleva procesos y datos al entorno digital sin alterar su esencia.</p></div>
+      <div class="hi"><div class="n">NIVEL 3</div><h4>Transformación digital</h4><p>Cambia la estructura del negocio: cómo se opera y se compite. Es un proceso continuo, no un proyecto con fin.</p></div>
+    </div>
+
+    <div class="grid-2 reveal" style="margin-bottom:46px">
+      <div class="card" style="border-left:3px solid var(--amber)">
+        <div class="k">Visión del proyecto</div>
+        <p style="font-size:18px;color:var(--ink);line-height:1.5;font-family:var(--display);font-weight:500">«Convertir a Ilopango en el principal <span style="color:var(--amber)">hub de aviación ejecutiva</span> de la región, con una experiencia integral, ágil y personalizada, sustentada en el <span style="color:var(--teal)">uso inteligente de los datos</span>.»</p>
+      </div>
+      <div class="card">
+        <div class="k">Marco de David Rogers · 5 dominios</div>
+        <p style="margin-bottom:14px">La transformación empieza con la estrategia, no con la tecnología:</p>
+        <div style="display:grid;gap:8px;font-size:14px">
+          <div style="display:flex;gap:12px"><span class="mono" style="color:var(--teal);flex:0 0 95px">Clientes</span><span style="color:var(--ink-soft)">el ejecutivo al centro</span></div>
+          <div style="display:flex;gap:12px"><span class="mono" style="color:var(--teal);flex:0 0 95px">Competencia</span><span style="color:var(--ink-soft)">colaborar vía plataformas</span></div>
+          <div style="display:flex;gap:12px"><span class="mono" style="color:var(--amber);flex:0 0 95px">Datos</span><span style="color:var(--ink-soft)">activo estratégico · núcleo</span></div>
+          <div style="display:flex;gap:12px"><span class="mono" style="color:var(--teal);flex:0 0 95px">Innovación</span><span style="color:var(--ink-soft)">experimentar y validar pronto</span></div>
+          <div style="display:flex;gap:12px"><span class="mono" style="color:var(--teal);flex:0 0 95px">Valor</span><span style="color:var(--ink-soft)">de alquilar infra a servicio de datos</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="font-size:22px;margin-bottom:8px">Rediseño de procesos · AS-IS → TO-BE</h3>
+    <p class="reveal" style="color:var(--ink-soft);margin-bottom:20px;max-width:60ch">No se trata de poner sistemas sobre procesos defectuosos, sino de repensarlos.</p>
+    <div class="tablewrap reveal" style="margin-bottom:42px">
+      <table>
+        <thead><tr><th>Proceso</th><th>AS-IS · hoy</th><th>TO-BE · rediseño digital</th></tr></thead>
+        <tbody>
+          <tr><td><b>Reservas y comercial</b></td><td class="asis">Llamadas y correos; sin base de clientes.</td><td class="tobe">Plataforma de reservas con CRM y autogestión.</td></tr>
+          <tr><td><b>Servicios en tierra</b></td><td class="asis">Fragmentados y manuales.</td><td class="tobe">Plataforma única: combustible, catering, transporte y VIP.</td></tr>
+          <tr><td><b>Facturación</b></td><td class="asis">Papel y hojas de cálculo.</td><td class="tobe">Facturación electrónica e integración contable.</td></tr>
+          <tr><td><b>Operación</b></td><td class="asis">Coordinación por radio y papel.</td><td class="tobe">Sistema de gestión con datos en tiempo real.</td></tr>
+          <tr><td><b>Inteligencia de negocio</b></td><td class="asis">Inexistente.</td><td class="tobe">Tableros y analítica que convierten datos en decisiones.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="reveal" style="font-size:22px;margin-bottom:20px">Cambios organizacionales que acompañan el rediseño</h3>
+    <div class="grid-3 reveal">
+      <div class="card"><div class="k">01 · Estructura</div><h3>Unidad de Transformación Digital y Datos</h3><p>Nueva unidad con dependencia directa de la administración, responsable de pilotar el cambio.</p></div>
+      <div class="card"><div class="k">02 · Cultura</div><h3>Cultura digital</h3><p>Experimentación, colaboración, decisiones basadas en datos, apertura al cambio y tolerancia al error.</p></div>
+      <div class="card"><div class="k">03 · Personas</div><h3>Gestión del cambio</h3><p>Comunicar la visión, hacer partícipe al personal y asegurar un patrocinador de alto nivel.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ESTRATEGIA DE DATOS ================= -->
+<section id="datos">
+  <div class="wrap">
+    <span class="req teal">Requisito C · Estrategia de datos</span>
+    <div class="eyebrow reveal">03 · El motor de la transformación</div>
+    <h2 class="sec-title reveal">Sin datos no hay personalización, ni optimización, ni decisiones informadas.</h2>
+    <p class="lead reveal" style="margin-bottom:40px">Esta es la sección medular: lo que distingue digitalizar trámites de transformar de verdad. La aviación es intensiva en datos, y las tres V del Big Data se manifiestan con claridad en un aeropuerto. El propósito de la estrategia es convertirlas en la cuarta.</p>
+
+    <div class="grid-3 reveal" style="margin-bottom:46px">
+      <div class="card"><div class="k">3V → 1</div><h3>Volumen · Velocidad · Variedad</h3><p>El valor del Big Data no está en acumular información, sino en convertirla en <b style="color:var(--amber)">conocimiento accionable</b>: la cuarta V, el Valor.</p></div>
+      <div class="card"><div class="k">Decisión estratégica</div><h3>Arquitectura en la nube</h3><p>Convierte gasto de capital (CAPEX) en operativo (OPEX), aporta escalabilidad y acelera la salida al mercado de nuevos servicios.</p></div>
+      <div class="card"><div class="k">Modelos de servicio</div><h3>IaaS · PaaS · SaaS</h3><p>Captura, integración y análisis sin grandes inversiones de hardware físico.</p></div>
+    </div>
+
+    <h3 class="reveal" style="font-size:22px;margin-bottom:18px">Arquitectura en tres capas</h3>
+    <div class="arch reveal" style="margin-bottom:46px">
+      <div class="layer"><div class="lnum">1</div><div><h4>Ingesta y captura</h4><p>Recoger datos de plataformas digitales y sensores IoT.</p></div><div class="tag">SaaS · IoT</div></div>
+      <div class="layer"><div class="lnum">2</div><div><h4>Almacenamiento e integración</h4><p>Repositorio central (data lake) que evita los silos de información.</p></div><div class="tag">IaaS / PaaS</div></div>
+      <div class="layer"><div class="lnum">3</div><div><h4>Analítica y consumo</h4><p>Modelar, analizar y entregar tableros e indicadores de negocio.</p></div><div class="tag">PaaS · BI</div></div>
+    </div>
+
+    <h3 class="reveal" style="font-size:22px;margin-bottom:6px">El valor crece con la madurez de la analítica</h3>
+    <p class="reveal" style="color:var(--ink-soft);margin-bottom:18px;max-width:62ch">De modelos reactivos a predictivos y prescriptivos: pasar de describir qué pasó, a anticipar qué pasará y, finalmente, a recomendar qué conviene hacer.</p>
+    <div class="ladder reveal" style="margin-bottom:46px">
+      <div class="s1"><div class="step">Reactivo</div><h4>Descriptivo</h4><p>¿Qué pasó? Tableros e indicadores del presente.</p></div>
+      <div class="s2"><div class="step">Predictivo</div><h4>Anticipar</h4><p>¿Qué pasará? Pronósticos de demanda y operación.</p></div>
+      <div class="s3"><div class="step">Prescriptivo</div><h4>Recomendar</h4><p>¿Qué conviene hacer? Personalización y optimización.</p></div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div class="card" style="border-left:3px solid var(--teal)"><div class="k">Condición 1</div><h3>Gobernanza de datos</h3><p>Sin ella los datos se vuelven un pasivo. Se definen responsables por dominio, estándares de calidad, clasificación, acceso por rol y cumplimiento normativo.</p></div>
+      <div class="card" style="border-left:3px solid var(--amber)"><div class="k">Condición 2 · ISO 27001</div><h3>Seguridad: tríada CIA</h3><p>Los datos del cliente ejecutivo —identidad, itinerarios, hábitos— son altamente sensibles. Confidencialidad, Integridad y Disponibilidad: la seguridad como habilitador de la <b style="color:var(--amber)">confianza</b>, no como costo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOJA DE RUTA ================= -->
+<section id="ruta">
+  <div class="wrap">
+    <span class="req">Requisito D · Hoja de ruta</span>
+    <div class="eyebrow reveal">04 · Ejecución por olas incrementales</div>
+    <h2 class="sec-title reveal">La pista hacia el hub: tres olas, 36 meses de despegue.</h2>
+    <p class="lead reveal" style="margin-bottom:14px">La hoja de ruta traduce la visión en un plan secuencial y temporal, sobre cuatro fases de roadmap.</p>
+    <div class="phases reveal" style="margin-bottom:30px">
+      <div class="phase"><b>01</b> Diagnóstico y alineación</div>
+      <div class="phase"><b>02</b> Diseño y priorización</div>
+      <div class="phase"><b>03</b> Implementación progresiva</div>
+      <div class="phase"><b>04</b> Evaluación continua</div>
+    </div>
+
+    <div class="roadway reveal">
+      <div class="waves">
+        <div class="wave">
+          <div class="dist">▸ 0 – 6 MESES</div>
+          <div class="w-n">Ola 1</div>
+          <h4>Cimientos digitales</h4>
+          <ul><li>Sitio web transaccional</li><li>Reservas en línea</li><li>Facturación electrónica</li></ul>
+        </div>
+        <div class="wave">
+          <div class="dist">▸ 6 – 18 MESES</div>
+          <div class="w-n">Ola 2</div>
+          <h4>Plataforma e innovación</h4>
+          <ul><li>Servicios FBO integrados</li><li>CRM ejecutivo</li><li>Repositorio central de datos</li></ul>
+        </div>
+        <div class="wave">
+          <div class="dist">▸ 18 – 36 MESES</div>
+          <div class="w-n">Ola 3</div>
+          <h4>Inteligencia y escala</h4>
+          <ul><li>Analítica avanzada</li><li>Modelos predictivos</li><li>Personalización del servicio</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="font-size:22px;margin:50px 0 8px">Medición · KPIs por dimensión</h3>
+    <p class="reveal" style="color:var(--ink-soft);margin-bottom:20px;max-width:60ch">Avanzar sin indicadores impide saber si la inversión genera valor o solo moderniza sin impacto.</p>
+    <div class="tablewrap reveal">
+      <table>
+        <thead><tr><th>Dimensión</th><th>KPI</th><th>Meta de referencia</th></tr></thead>
+        <tbody>
+          <tr><td><b>Operativos</b></td><td class="asis">Tiempo de gestión de servicios en tierra</td><td><span class="pill bajo">−50% en 18 meses</span></td></tr>
+          <tr><td><b>Financieros</b></td><td class="asis">Ingresos del segmento ejecutivo</td><td><span class="pill medio">+25% en 18 meses</span></td></tr>
+          <tr><td><b>Experiencia</b></td><td class="asis">NPS y retención de clientes</td><td><span class="pill bajo">NPS &gt; 70 · retención &gt; 80%</span></td></tr>
+          <tr><td><b>Madurez digital</b></td><td class="asis">Procesos clave digitalizados</td><td><span class="pill medio">100% en 12 meses</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAPEO DE ACTORES ================= -->
+<section id="actores">
+  <div class="wrap">
+    <span class="req">Requisito E · Mapeo de actores</span>
+    <div class="eyebrow reveal">05 · Quién mueve la transformación</div>
+    <h2 class="sec-title reveal">El actor crítico es CEPA: su respaldo de alto nivel es condición necesaria.</h2>
+    <div class="stk reveal">
+      <div>
+        <div class="matrix" id="matrix">
+          <div class="q tl"><b>Mantener satisfecho</b>Alta influencia · interés medio</div>
+          <div class="q tr"><b>Gestionar de cerca</b>Alta influencia · alto interés</div>
+          <div class="q bl"><b>Monitorear</b>Baja influencia · bajo interés</div>
+          <div class="q br"><b>Involucrar / informar</b>Baja influencia · alto interés</div>
+          <div class="axis-x">Interés →</div>
+          <div class="axis-y">Influencia →</div>
+
+          <div class="actor crit" style="top:16%;left:82%"><div class="pin"></div><div class="nm">CEPA</div></div>
+          <div class="actor" style="top:18%;left:50%"><div class="pin"></div><div class="nm">Fuerza Aérea / Aviación Civil</div></div>
+          <div class="actor" style="top:46%;left:82%"><div class="pin"></div><div class="nm">Clientes y operadores</div></div>
+          <div class="actor" style="top:60%;left:72%"><div class="pin"></div><div class="nm">Personal del aeropuerto</div></div>
+          <div class="actor" style="top:82%;left:48%"><div class="pin"></div><div class="nm">Comunidades vecinas</div></div>
+        </div>
+      </div>
+      <div>
+        <ul class="stk-list">
+          <li><div class="who"><b>CEPA · administrador</b><span>Influencia ALTA · Interés ALTO</span></div><div class="strat">Gestionar de cerca</div></li>
+          <li><div class="who"><b>Fuerza Aérea / Aviación Civil</b><span>Influencia ALTA · Interés MEDIO</span></div><div class="strat">Mantener satisfecho</div></li>
+          <li><div class="who"><b>Clientes y operadores ejecutivos</b><span>Influencia MEDIA · Interés ALTO</span></div><div class="strat">Involucrar</div></li>
+          <li><div class="who"><b>Personal del aeropuerto</b><span>Influencia MEDIA · Interés ALTO</span></div><div class="strat">Involucrar</div></li>
+          <li><div class="who"><b>Comunidades vecinas</b><span>Influencia BAJA · Interés MEDIO</span></div><div class="strat">Monitorear e informar</div></li>
+        </ul>
+        <p style="color:var(--ink-soft);font-size:15px;margin-top:20px">La resistencia, de surgir, provendría con mayor probabilidad de un actor de <b style="color:var(--amber)">alta influencia mal gestionado</b>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRIORIZACIÓN ================= -->
+<section id="prioridad">
+  <div class="wrap">
+    <span class="req teal">Requisito F · Priorización</span>
+    <div class="eyebrow reveal">06 · Dónde empezar sin dispersar recursos</div>
+    <h2 class="sec-title reveal">Quick wins primero: resultados visibles que generan los primeros datos.</h2>
+    <p class="lead reveal" style="margin-bottom:34px">Cada iniciativa se evalúa por impacto, factibilidad, urgencia y escalabilidad, y se clasifica con el método MoSCoW. Las de alto impacto y alta factibilidad se ejecutan primero.</p>
+
+    <div class="moscow reveal">
+      <div class="m-must"><small>MUST</small><div class="h">Imprescindible</div><p>Sitio web transaccional y reservas en línea — los quick wins que dan credibilidad interna.</p></div>
+      <div class="m-should"><small>SHOULD</small><div class="h">Importante</div><p>CRM, facturación electrónica y servicios FBO integrados.</p></div>
+      <div><small>COULD</small><div class="h">Deseable</div><p>Personalización avanzada y modelos predictivos del segmento ejecutivo.</p></div>
+      <div><small>WON'T (aún)</small><div class="h">Fuera de alcance</div><p>Cualquier ampliación física de pista — descartada por la restricción urbana.</p></div>
+    </div>
+
+    <div class="okr reveal">
+      <div class="obj"><span>Objetivo:</span> consolidar a Ilopango como el hub digital de aviación ejecutiva de la región.</div>
+      <ul>
+        <li>Digitalizar el 100% de las reservas en 12 meses.</li>
+        <li>Aumentar 25% los movimientos ejecutivos en 18 meses.</li>
+        <li>Alcanzar un NPS superior a 70.</li>
+        <li>Reducir 50% el tiempo de coordinación de servicios en tierra.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RIESGOS ================= -->
+<section id="riesgos">
+  <div class="wrap">
+    <span class="req">Requisito G · Riesgos (MAGERIT)</span>
+    <div class="eyebrow reveal">07 · Análisis y gestión de riesgos</div>
+    <h2 class="sec-title reveal">MAGERIT: cruzar impacto y probabilidad para mantener el riesgo en niveles aceptables.</h2>
+    <p class="lead reveal" style="margin-bottom:26px">Junto a la tríada CIA (ISO 27001) y el NIST Cybersecurity Framework, MAGERIT aporta un método paso a paso. Valora activos en cinco dimensiones —CIA más autenticidad y trazabilidad— con énfasis en el factor humano como eslabón más débil. <span class="mono" style="color:var(--ink-mute);font-size:13px">[A] ataque · [I] industrial/fallo · [E] error</span></p>
+
+    <div class="tablewrap reveal" style="margin-bottom:26px">
+      <table>
+        <thead><tr><th>Activo</th><th>Amenaza</th><th>Tipo</th><th>Impacto</th><th>Prob.</th><th>Riesgo</th></tr></thead>
+        <tbody>
+          <tr><td><b>Base de datos de clientes</b></td><td class="asis">Fuga o robo de datos</td><td class="mono">[A]</td><td>Muy alto</td><td>Media</td><td><span class="pill alto">Alto</span></td></tr>
+          <tr><td><b>Sistema de operaciones</b></td><td class="asis">Ransomware / caída</td><td class="mono">[A]/[I]</td><td>Muy alto</td><td>Media</td><td><span class="pill alto">Alto</span></td></tr>
+          <tr><td><b>Plataforma de reservas</b></td><td class="asis">Denegación de servicio</td><td class="mono">[A]</td><td>Alto</td><td>Media</td><td><span class="pill medio">Medio</span></td></tr>
+          <tr><td><b>Personal y procesos</b></td><td class="asis">Error humano</td><td class="mono">[E]</td><td>Medio</td><td>Alta</td><td><span class="pill medio">Medio</span></td></tr>
+          <tr><td><b>Proyecto en conjunto</b></td><td class="asis">Resistencia al cambio</td><td class="mono">[E]</td><td>Alto</td><td>Alta</td><td><span class="pill alto">Alto</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 reveal" style="align-items:stretch">
+      <div class="tablewrap" style="border-radius:12px">
+        <table style="min-width:380px">
+          <thead><tr><th>Riesgo</th><th>Salvaguarda (ISO 27001 · NIST)</th></tr></thead>
+          <tbody>
+            <tr><td class="asis">Fuga o robo de datos</td><td>Cifrado, RBAC, MFA y auditoría.</td></tr>
+            <tr><td class="asis">Ransomware / caída</td><td>Copias inmutables, plan de continuidad y monitoreo.</td></tr>
+            <tr><td class="asis">Error humano</td><td>Capacitación, procedimientos y validación en la captura.</td></tr>
+            <tr><td class="asis">Resistencia al cambio</td><td>Gestión del cambio, patrocinio alto y comunicación.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="finding" style="margin-top:0">
+        <div class="ic">!</div>
+        <p>Hallazgo clave: aplicadas las salvaguardas, los riesgos tecnológicos descienden a niveles manejables. El riesgo con mayor combinación de impacto y probabilidad <b>no es tecnológico, sino la resistencia organizacional al cambio</b>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CIERRE ================= -->
+<section id="cierre">
+  <div class="wrap">
+    <div class="eyebrow reveal" style="justify-content:center;display:flex">08 · Beneficios y conclusión</div>
+    <h2 class="sec-title reveal" style="text-align:center;margin:0 auto 40px;max-width:24ch">Crecer en valor, no en metros de pista.</h2>
+
+    <div class="benefits reveal" style="margin-bottom:54px">
+      <div class="benefit"><div class="bn">B1</div><h4>Posicionamiento</h4><p>Un hub con identidad propia que complementa a Comalapa, no compite con él.</p></div>
+      <div class="benefit"><div class="bn">B2</div><h4>Nuevos ingresos</h4><p>Servicios digitales de alto valor para un segmento dispuesto a pagar.</p></div>
+      <div class="benefit"><div class="bn">B3</div><h4>Eficiencia</h4><p>Procesos sin papel y operación guiada por datos, no por intuición.</p></div>
+      <div class="benefit"><div class="bn">B4</div><h4>Fidelización</h4><p>Un cliente ejecutivo atendido con agilidad que regresa.</p></div>
+      <div class="benefit"><div class="bn">B5</div><h4>Escalabilidad</h4><p>Base digital para crecer pese a la restricción física de la pista.</p></div>
+    </div>
+
+    <p class="thesis reveal">No digitalizar trámites aislados, sino transformar el <em>modelo de negocio</em>: de un aeródromo que alquila pista a un <span class="t2">hub que cobra por una experiencia integral basada en datos.</span></p>
+
+    <div class="equation reveal">
+      <span>Estrategia de <b>datos</b> = núcleo</span>
+      <span class="op">·</span>
+      <span><b>Medición</b> = condición de éxito</span>
+      <span class="op">·</span>
+      <span><b>Tecnología</b> = habilitador, nunca motor</span>
+    </div>
+    <p class="reveal" style="text-align:center;color:var(--amber);font-family:var(--display);font-weight:500;font-size:clamp(18px,2.6vw,24px);margin-top:36px;max-width:30ch;margin-left:auto;margin-right:auto">Por encima de cualquier amenaza técnica, el factor decisivo son las personas.</p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-uni">
+        <b>Universidad Evangélica de El Salvador</b>
+        Maestría en Administración de Negocios y Transformación Digital<br>
+        Transformación Digital e Innovación en los Negocios — Sección 1<br>
+        Docente: Ing. Carlos Roberto Mejía<br>
+        San Salvador, El Salvador — Junio de 2026
+        <div class="reqmap">
+          <a href="#contexto"><b>A</b> Presentación</a>
+          <a href="#cambios"><b>B</b> Cambios org.</a>
+          <a href="#datos"><b>C</b> Datos</a>
+          <a href="#ruta"><b>D</b> Hoja de ruta</a>
+          <a href="#actores"><b>E</b> Actores</a>
+          <a href="#prioridad"><b>F</b> Priorización</a>
+          <a href="#riesgos"><b>G</b> Riesgos</a>
+        </div>
+      </div>
+      <div>
+        <ul class="team">
+          <div class="team-h">Equipo 5 · Integrantes</div>
+          <li>Katherine Michelle Durán Rodríguez</li>
+          <li>Katherine Daniela Rivera González</li>
+          <li>Erick Alberto Cruz Rosales</li>
+          <li>Rafael Armando Castro Guzmán</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span>ILOPANGO · TD–2026 · EQUIPO 05</span>
+      <span>Del aeródromo al hub ejecutivo digital</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- nav: burger + shrink + active ---------- */
+  var nav=document.getElementById('nav');
+  var burger=document.getElementById('burger');
+  var navLinks=document.getElementById('navLinks');
+  burger.addEventListener('click',function(){navLinks.classList.toggle('open');});
+  navLinks.addEventListener('click',function(e){if(e.target.tagName==='A')navLinks.classList.remove('open');});
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('shrink',window.scrollY>40);
+  },{passive:true});
+
+  /* ---------- reveal on scroll ---------- */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}
+    });
+  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  /* ---------- active section in nav ---------- */
+  var links=Array.prototype.slice.call(navLinks.querySelectorAll('a'));
+  var map={};
+  links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var secObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        links.forEach(function(a){a.classList.remove('active');});
+        var t=map[en.target.id];if(t)t.classList.add('active');
+      }
+    });
+  },{threshold:.01,rootMargin:'-45% 0px -50% 0px'});
+  ['contexto','cambios','datos','ruta','actores','prioridad','riesgos','cierre'].forEach(function(id){
+    var s=document.getElementById(id);if(s)secObs.observe(s);
+  });
+
+  /* ---------- RADAR de madurez ---------- */
+  var pillars=[
+    {name:'Gobernanza y liderazgo',v:2},
+    {name:'Personas y cultura',v:2},
+    {name:'Capacidad instalada',v:2},
+    {name:'Innovación',v:1},
+    {name:'Tecnología',v:2}
+  ];
+  var svg=document.getElementById('radar');
+  var cx=200, cy=178, maxR=128, N=pillars.length, NS='http://www.w3.org/2000/svg';
+  function pt(r,i){var a=(-90+i*(360/N))*Math.PI/180;return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
+  function poly(r){var p=[];for(var i=0;i<N;i++)p.push(pt(r,i).join(','));return p.join(' ');}
+  function el(t,attrs){var e=document.createElementNS(NS,t);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  // rings
+  for(var L=1;L<=5;L++){
+    svg.appendChild(el('polygon',{points:poly(maxR*L/5),fill:'none',stroke:'#22324f',
+      'stroke-width':L===5?1.4:1,opacity:L===5?.9:.5}));
+  }
+  // axes + labels
+  pillars.forEach(function(p,i){
+    var o=pt(maxR,i);
+    svg.appendChild(el('line',{x1:cx,y1:cy,x2:o[0],y2:o[1],stroke:'#22324f','stroke-width':1,opacity:.55}));
+    var lp=pt(maxR+24,i);
+    var anchor=Math.abs(lp[0]-cx)<6?'middle':(lp[0]>cx?'start':'end');
+    var t=el('text',{x:lp[0],y:lp[1],fill:'#9fb1cd','font-size':'11','font-family':'IBM Plex Mono, monospace','text-anchor':anchor,'dominant-baseline':'middle'});
+    // dividir nombre largo en 2 líneas
+    var words=p.name.split(' '),line1=words.slice(0,Math.ceil(words.length/2)).join(' '),line2=words.slice(Math.ceil(words.length/2)).join(' ');
+    var ts1=el('tspan',{x:lp[0],dy:'-0.4em'});ts1.textContent=line1;
+    var ts2=el('tspan',{x:lp[0],dy:'1.15em'});ts2.textContent=line2;
+    t.appendChild(ts1);t.appendChild(ts2);
+    svg.appendChild(t);
+  });
+  // data polygon
+  var dataPts=pillars.map(function(p,i){return pt(maxR*p.v/5,i).join(',');}).join(' ');
+  var dg=el('g',{class:'radar-poly'});
+  dg.appendChild(el('polygon',{points:dataPts,fill:'rgba(52,224,196,0.18)',stroke:'#34e0c4','stroke-width':2,'stroke-linejoin':'round'}));
+  pillars.forEach(function(p,i){
+    var c=pt(maxR*p.v/5,i);
+    dg.appendChild(el('circle',{cx:c[0],cy:c[1],r:4,fill:'#f1b24a',stroke:'#080d1a','stroke-width':1.5}));
+  });
+  svg.appendChild(dg);
+
+  // pillar list (barras)
+  var pl=document.getElementById('pillars');
+  pillars.forEach(function(p){
+    var li=document.createElement('li');
+    li.innerHTML='<span class="name">'+p.name+'</span><span class="bar"><i data-w="'+(p.v/5*100)+'"></i></span><span class="v">'+p.v+'/5</span>';
+    pl.appendChild(li);
+  });
+
+  // animar radar + barras al entrar
+  var animObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        dg.classList.add('draw');
+        pl.querySelectorAll('.bar i').forEach(function(i){i.style.width=i.getAttribute('data-w')+'%';});
+        animObs.unobserve(en.target);
+      }
+    });
+  },{threshold:.3});
+  animObs.observe(svg);
+})();
+</script>
+</body>
+</html>
